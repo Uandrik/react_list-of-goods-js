@@ -19,7 +19,7 @@ const SORT_FIELD_ALPHABET = 'alphabet';
 const SORT_FIELD_LENGTH = 'length';
 const SORT_FIELD_REVERSE = 'reverse';
 
-function getPrepearedGoods(goods, sortField) {
+function getPrepearedGoods(goods, sortField, sortOrder) {
   const prepearedGoods = [...goods];
 
   if (sortField) {
@@ -32,32 +32,35 @@ function getPrepearedGoods(goods, sortField) {
         prepearedGoods.sort((good1, good2) => good1.length - good2.length);
         break;
 
-      case SORT_FIELD_REVERSE:
-        prepearedGoods.reverse();
-        break;
-
       default:
-        return prepearedGoods;
+        break;
     }
   }
 
-  return prepearedGoods;
+  return sortOrder ? prepearedGoods.reverse() : prepearedGoods;
 }
 
 export const App = () => {
   const [sortField, setSortField] = useState('');
-  const [currentList, setCurrentList] = useState(goodsFromServer);
-  // const copy = [...goodsFromServer];
+  const [sortOrder, setSortOrder] = useState(false);
 
-  const visibleGoods = getPrepearedGoods(currentList, sortField);
+  const handleSort = field => {
+    if (field === sortField) {
+      setSortOrder(!sortOrder);
+    } else {
+      setSortOrder(false);
+      setSortField(field);
+    }
+  };
+
+  const visibleGoods = getPrepearedGoods(goodsFromServer, sortField, sortOrder);
 
   return (
     <div className="section content">
       <div className="buttons">
         <button
           onClick={() => {
-            setSortField(SORT_FIELD_ALPHABET);
-            setCurrentList(visibleGoods);
+            handleSort(SORT_FIELD_ALPHABET);
           }}
           type="button"
           className={
@@ -71,8 +74,7 @@ export const App = () => {
 
         <button
           onClick={() => {
-            setSortField(SORT_FIELD_LENGTH);
-            setCurrentList(visibleGoods);
+            handleSort(SORT_FIELD_LENGTH);
           }}
           type="button"
           className={
@@ -86,8 +88,7 @@ export const App = () => {
 
         <button
           onClick={() => {
-            setSortField(SORT_FIELD_REVERSE);
-            setCurrentList(visibleGoods);
+            setSortOrder(!sortOrder);
           }}
           type="button"
           className={
@@ -100,7 +101,7 @@ export const App = () => {
         </button>
 
         <button
-          onClick={() => setSortField('')}
+          onClick={() => handleSort('')}
           type="button"
           className="button is-danger is-light"
           style={{ display: !sortField && 'none' }}
