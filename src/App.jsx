@@ -104,7 +104,7 @@ export const App = () => {
           onClick={() => handleSort('')}
           type="button"
           className="button is-danger is-light"
-          style={{ display: !sortField && 'none' }}
+          style={{ display: !sortField ? 'none' : 'inline-block'}}
         >
           Reset
         </button>
